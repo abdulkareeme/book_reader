@@ -1,0 +1,7 @@
+{% if book_list %}
+{%  for book in book_list %}
+    <p> <a href="{% url 'detail_book' book.id %}"">{{ book.title }} </a> </p>
+{% endfor %}
+{% else %}
+<p>there is no book now</p>
+{% endif %} 
