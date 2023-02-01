@@ -1,7 +1,11 @@
 <h1>Register</h1>
 	<form method="POST">
 		{% csrf_token %}
-		{{ register_form }}                    
+		<tabel>
+		{{ register_form.as_p }}   
+		<br>
+		{{ profile.as_p}} 
+		</tabel>                
 		<button type="submit">Register</button>
 	</form>
 <p>If you already have an account, <a href="/accounts/login/">login</a> instead.</p>

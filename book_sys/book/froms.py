@@ -15,18 +15,22 @@ class UploadFile(forms.Form):
     upfile = forms.FileField()
 
 class UserCreateForm(UserCreationForm):
-    choice = [(1,'Authur'), (2,'Reader')]
-    account_type= forms.IntegerField(required=True,validators=[validators.MinValueValidator(1) , validators.MaxValueValidator(2)])
     username = forms.CharField(required=True)
     email = forms.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ("username","email", "account_type", "password1", "password2")
+        fields = ("username","email", "password1", "password2")
 
     def save(self, commit=True):
         user = super(UserCreateForm, self).save(commit=False)
-        user.account_type= self.cleaned_data["account_type"]
+        user.email= self.cleaned_data["email"]
         if commit:
             user.save()
         return user
+
+class ProfileForm(ModelForm):
+    class Meta :
+        model = Profile
+        fields = ['account_type']
+    
