@@ -1,11 +1,59 @@
-<h1>Register</h1>
-	<form method="POST">
-		{% csrf_token %}
-		<tabel>
-		{{ register_form.as_p }}   
-		<br>
-		{{ profile.as_p}} 
-		</tabel>                
-		<button type="submit">Register</button>
-	</form>
-<p>If you already have an account, <a href="/accounts/login/">login</a> instead.</p>
+{% extends 'book/base_template.html' %}
+
+{% block content %}
+<div style="display: flex ; justify-content: center;">
+	<div
+		style=" display: flex; margin-top: 40px ; padding: 40px; border:1.5px #ddd solid; border-radius: 20px; width: 800px; flex-direction: column;">
+		<div class="h3">Register</div>
+		{% if register_form.errors or profile.errors %}
+		<div class="alert alert-danger" role="alert">
+			{{ register_form.errors }}
+			{{ profile.errors }}
+		</div>
+		{% endif %}
+		<form method="POST">
+			{% csrf_token %}
+
+			<div style="margin-top:10px ;">
+				<label for="id_username">Username</label>
+				<input  class='form-control' type="text" name="username" autofocus="" required="" id="id_username">
+			</div>
+			<div style="margin-top:10px ;">
+				<label for="id_email">Email <span class="form-text">(Optional)</span></label>
+				<input class='form-control' type="email" name="email" id="id_email">
+			</div>
+			<div style="margin-top:10px ;">
+				<label for="id_password1" >Password</label>
+				<input class='form-control' type="password" name="password1" autocomplete="new-password" required="" id="id_password1">
+				<div  class="helptext form-text" >
+					<ul style="list-style:none;" >
+						<li>Your password can’t be too similar to your other personal information.</li>
+						<li>Your password must contain at least 8 characters.</li>
+						<li>Your password can’t be a commonly used password.</li>
+						<li>Your password can’t be entirely numeric.</li>
+					</ul>
+				</div>
+			</div>
+			<div style="margin-top:10px ;">
+				<label for="id_password2">Password confirmation</label>
+				<input class='form-control' type="password" name="password2" autocomplete="new-password" required="" id="id_password2">
+				<div class="helptext form-text">Enter the same password as before, for verification.</div>
+			</div>
+			<div style="margin-top:10px ;">
+				<p>Are You :</p>
+				<div class="form-check">
+				<input class="form-check-input"  type="radio" name="account_type" id="id_account_type1" value="1">
+				<label class="form-check-label" for="id_account_type1">Reader</label>
+				</div>
+				<div class="form-check" style="margin-top: 10px;">
+				<input class="form-check-input"  type="radio" name="account_type" id="id_account_type2" value="2">
+				<label class="form-check-label" for="id_account_type2">Auther</label>
+				</div>
+			</div>
+
+			<button style="margin-top: 10px;" class="btn btn-primary" type="submit">Register</button>
+		</form>
+		<p style="margin-top: 10px;">If you already have an account, <a href="/accounts/login/">login</a> instead.</p>
+	</div>
+</div>
+{%endblock%}

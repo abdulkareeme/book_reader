@@ -1,11 +1,31 @@
+{% extends 'book/base_template.html' %}
 
-{% if form.errors %}
-  <p>Your username and password didn't match. Please try again.</p>
-{% endif %}
+{% block content %}
+<div style="display: flex ; justify-content: center;">
+  <div style=" display: flex; margin-top: 40px ; padding: 40px; border:1.5px #ddd solid; border-radius: 20px; width: 400px; flex-direction: column;">
+    <div class="h3">Login</div>
+    {% if form.errors %}
+    <div class="alert alert-danger" role="alert">
+      Your username and password didn't match. Please try again.
+    </div>
+    {% endif %}
 
-<form method="post" action="{% url 'login' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" class="btn btn-primary" value="Login" />
-    <input type="hidden" name="next" value="{{ next }}" />
-</form>
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      <div style="margin-top:10px ;">
+        <lable for='id_username'>Username</label>
+          <input class='form-control' type="text" name="username" value="" autofocus="" autocapitalize="none"
+            autocomplete="username" maxlength="150" required="" id="id_username">
+      </div>
+      <div style="margin-top:10px ;" >
+        <label for="id_password">Password</label>
+        <input class='form-control' type="password" name="password" autocomplete="current-password" required=""
+          id="id_password">
+      </div>
+      <div style="margin-top:10px ;" ><a href="{% url 'register' %}">Register here</a> if you don't have an account</div>
+      <input type="submit" class="btn btn-primary" value="Login" style="margin-top: 10px;" />
+      <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+  </div>
+</div>
+{% endblock %}

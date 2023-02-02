@@ -16,7 +16,7 @@ class UploadFile(forms.Form):
 
 class UserCreateForm(UserCreationForm):
     username = forms.CharField(required=True)
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=False)
 
     class Meta:
         model = User

@@ -33,6 +33,7 @@ class CreateBook(LoginRequiredMixin , View):
         b.owner=user.profile
         b.save()
         f= request.FILES["upfile"]
+        page_number =1
         for chunk in f.chunks():
             i=0 
             while i<len(chunk):
@@ -44,9 +45,9 @@ class CreateBook(LoginRequiredMixin , View):
                 page_content = str(chunk[i:i+j])
                 if j!=len(chunk) and chunk[j]!=' ':
                     page_content+='-'
-                Page.objects.create(content = page_content , book = b  , page_number = j)
+                Page.objects.create(content = page_content , book = b  , page_number = page_number)
                 i+=1001
-                j+=1
+                page_number+=1
         return redirect (self.success_url)
 
 class Main(ListView):
@@ -75,9 +76,22 @@ class DetailPage (LoginRequiredMixin , View):
         return render(request , self.template_name , {'info':x , 'last_page' : last_page['page_number__max']})
     
     def post(self , request , book_pk  , page_num):
+        last_page = Read.objects.filter(page__book__id = book_pk , user__user__id = request.user.id)
         if 'next' in request.POST:
+            if(last_page.exists()):
+                page = Page.objects.filter(book__id = book_pk).get(page_number = page_num +1)
+                last_page.update(page = page)
+            else :
+                next_page = Page.objects.filter(book__id = book_pk).get(page_number = page_num+1)
+                Read.objects.create(page = next_page , user = request.user.profile)
             return redirect(reverse('detail_page',kwargs={'book_pk' : book_pk , 'page_num' : page_num+1}))
         else :
+            if(last_page.exists()):
+                page = Page.objects.filter(book__id = book_pk).get(page_number = page_num -1)
+                last_page.update(page = page)
+            else :
+                previous_page = Page.objects.filter(book__id = book_pk).get(page_number = page_num-1)
+                Read.objects.create(page = previous_page , user = request.user.profile)
             return redirect(reverse('detail_page',kwargs={'book_pk' : book_pk , 'page_num' : page_num-1}))
             
 
@@ -102,6 +116,3 @@ def register_request(request):
     profile_form = ProfileForm()
     return render(request=request , template_name="register.html",
      context={"register_form":UserForm , "profile" : profile_form})
-
-
-
