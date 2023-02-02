@@ -1,0 +1,3 @@
+{% for page in pages %}
+    <p><a href="{% url 'detail_page' page.book.id page.page_number %}">{{ page.book }} page {{ page.page_number }}</a>
+{% endfor %}

@@ -1,0 +1,15 @@
+{{ info.page_number }}
+<br>
+{{ info.book }}
+<br>
+{{ info.content }}
+<form action="" method="post">
+    {% csrf_token %}
+    {% if info.page_number > 1 %}
+        <input type="submit" name="previous" value='Previous'>
+    {% endif %}
+    {% if info.page_number < last_page %}
+        <input type="submit" name="next" value='Next'>
+    {% endif%}
+    
+</form>
