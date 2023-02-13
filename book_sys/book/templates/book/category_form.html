@@ -1,0 +1,21 @@
+{% extends 'book/base_template.html' %}
+{% block content %}
+<div style="display: flex ; justify-content: center; " >
+    <div
+        style=" background-color: #fff; display: flex; margin-top: 40px ; padding: 40px; border:1.5px #ddd solid; border-radius: 9px; width: 800px; flex-direction: column;box-shadow:0px 0px 12px 5px #eee;">
+        <div class="h3">Add Category</div>
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.errors }}
+        </div>
+        {% endif %}
+        <form action="" method="post" enctype="multipart/form-data">
+
+            {%csrf_token%}
+            {{form.as_div}}
+            <input style="margin-top:10px ;" class='btn btn-primary' type="submit" value="Submit">
+        </form>
+    </div>
+</div>
+{% endblock content %}
+

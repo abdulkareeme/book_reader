@@ -1,15 +1,19 @@
-{{ info.page_number }}
-<br>
-{{ info.book }}
-<br>
-{{ info.content }}
+{% extends 'book/base_template.html' %}
+{% block content %}
 <form action="" method="post">
     {% csrf_token %}
-    {% if info.page_number > 1 %}
-        <input type="submit" name="previous" value='Previous'>
-    {% endif %}
-    {% if info.page_number < last_page %}
-        <input type="submit" name="next" value='Next'>
-    {% endif%}
-    
+    <p class='h3' style="text-align: center;">{{ info.book }}</p>
+    <div style="display: flex;align-items: center; justify-content: center;">
+        <input type="submit" name="previous" value='Previous'class="{% if info.page_number <= 1%} disabled {% endif%} btn btn-secondary ">
+        <div style="width: 400px; height: 550px; background-color: #eee;margin: 15px; padding: 10px;border-start-start-radius: 20px 70px; border-bottom-right-radius: 20px 70px;">
+            {{ info.content }}
+        </div>
+        
+        
+         <input type="submit" name="next" value='Next'class="{% if info.page_number >= last_page %}disabled{% endif%} btn btn-secondary ">
+        
+    </div>
+    <p style="text-align: center;">{{info.page_number}}</p>
+
 </form>
+{% endblock %}

@@ -1,10 +1,42 @@
-<form action="" method="post" enctype="multipart/form-data">
+{% extends 'book/base_template.html' %}
 
-    {%csrf_token%}
-    <table>
-        {{ form.as_table }}
-    </table>
-    {{ upfile.as_p }}
-    <br>
-    <input type="submit" value="Submit">
-</form>
+{% block content %}
+<div style="display: flex ; justify-content: center; " >
+    <div
+        style=" background-color: #fff; display: flex; margin-top: 40px ; padding: 40px; border:1.5px #ddd solid; border-radius: 9px; width: 800px; flex-direction: column;box-shadow:0px 0px 12px 5px #eee;">
+        <div class="h3">Add book</div>
+        {% if form.errors or upfile.errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.errors }}
+            {{ upfile.errors }}
+        </div>
+        {% endif %}
+        <form action="" method="post" enctype="multipart/form-data">
+
+            {%csrf_token%}
+            <div style="margin-top:10px ;">
+                <label for="id_title">Title</label>
+                {{form.title}}
+            </div>
+            <div style="margin-top:10px ;">
+                <label for="id_preview">Preview</label>
+                {{form.preview}}
+            </div>
+
+            <label for="id_categories" style="margin-top:10px ; ">Categories</label>
+            <div style="margin-top:10px ;" class="container">
+                {{form.categories}}
+                <a href="{%url 'create_category'%}">Create Category</a>
+            </div>
+            {%if upfile %}
+            <div style="margin-top:10px ;">
+                <label for="id_upfile">Upload the file</label>
+                {{ upfile.upfile}}
+            </div>
+            {% endif%}
+            <input style="margin-top:10px ;" class='btn btn-primary' type="submit" value="Submit">
+        </form>
+
+    </div>
+</div>
+{% endblock %}

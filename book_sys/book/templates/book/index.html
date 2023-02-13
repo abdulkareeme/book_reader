@@ -1,25 +1,48 @@
-
-{%  if user.is_authenticated %}
-Hello {{ user.username }}
-{% endif %}
+{% extends 'book/base_template.html' %}
+{% block content %}
 
 {% if book_list %}
-{%  for book in book_list %}
-    <p> <a href="{% url 'detail_book' book.id %}"">{{ book.title }} </a> </p>
-{% endfor %}
-{% else %}
-<p>there is no book now</p>
-{% endif %} 
+<div style="display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); justify-content: space-between; ">
+  {% for book in book_list %}
+  <div class="card" style="width: 18rem; margin: 15px;">
+    <div class="card-body">
+      <h5 class="card-title">{{ book.title }}</h5>
+      <h6 class="card-subtitle mb-2" style="margin-top:15px;">{%for category in book.categories.all%}<span
+          style="background-color: #999 ; color: white ; border-radius: 4px; padding: 5px; font-size: 13px; margin-right: 2px;">{{category}}</span>{%endfor%}</h6>
+      <!-- Button trigger modal -->
+      <a type="button" class="card-text" style="z-index: 9999999; display: block; text-decoration: none;"
+        data-bs-toggle="modal" data-bs-target="#exampleModal{{book.id}}">
+        See Preview
+      </a>
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal{{book.id}}" tabindex="-1" aria-labelledby="exampleModalLabel{{book.id}}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel{{book.id}}">{{book}}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              {{book.preview}}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-{% if user.profile.account_type == 2 %}
-<a href="{% url 'create_book' %}">Create Book</a>
+      <a href="{% url 'detail_book' book.id %}" class="btn btn-primary">Read</a>
+      {%if user.profile == book.owner%}
+      <a href="{%url 'update_book' book.id%}" class="btn btn-primary">Update</a>
+      <a href="{%url 'delete_book' book.id%}" class="btn btn-primary">Delete</a>
+      {%endif%}
+    </div>
+  </div>
+  {%endfor%}
+</div>
+{% else %}
+<p>There is no book now</p>
 {% endif %}
 
-{%if not user.is_authenticated%}
-<p><a href="{% url 'login'%}?next={{request.path}}">Login</a></p>
-<p><a href="{% url 'register' %}">Register</a></p>
-{%endif%}
-
-{%if user.is_authenticated%}
-<p><a href="{% url 'logout' %}?next={{request.path}}">logout</a></p>
-{%endif%}
+{% endblock %}
