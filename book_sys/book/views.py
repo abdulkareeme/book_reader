@@ -6,7 +6,7 @@ from django.views import View
 from .froms import *
 from django.urls import reverse , reverse_lazy
 from .models import *
-from django.views.generic import ListView , DetailView
+from django.views.generic import ListView , DetailView , UpdateView, DeleteView
 from django.db.models import Max
 # Create your views here.
 
@@ -16,9 +16,9 @@ class CreateBook(LoginRequiredMixin , View):
     def get(self , request):
         if request.user.profile.account_type == 1 :
              raise Http404()
-
         form = BookForm()
         upfile= UploadFile()
+
         ctx = {'form' : form  , 'upfile' : upfile}
         return render(request , self.template , ctx)
     
@@ -26,27 +26,35 @@ class CreateBook(LoginRequiredMixin , View):
         form = BookForm(request.POST)
         upfile= UploadFile(request.POST , request.FILES)
         if not form.is_valid() or not upfile.is_valid():
-            ctx = {'form' : form}
+            ctx = {'form' : form , 'upfile' : upfile}
             return render(request , self.template , ctx)
         b=form.save(commit=False)
-        user=request.user
-        b.owner=user.profile
+        b.owner=request.user.profile
         b.save()
+        add_categories= BookForm(request.POST , instance=b)
+        add_categories.save()
+
         f= request.FILES["upfile"]
         page_number =1
+        l=0
         for chunk in f.chunks():
             i=0 
+            chunk = str(chunk)
+            
             while i<len(chunk):
-                j=min(i+1000,len(chunk)) 
-                k=50
+                j=i+900
+                j=min(j,len(chunk))
+                k=15
                 while(j!=len(chunk) and chunk[j]!=' ' and k>0):
                     k-=1
                     j-=1
-                page_content = str(chunk[i:i+j])
-                if j!=len(chunk) and chunk[j]!=' ':
-                    page_content+='-'
-                Page.objects.create(content = page_content , book = b  , page_number = page_number)
-                i+=1001
+                page_content = chunk[i:j].split('\n')
+                content = str()
+                for row in page_content :
+                    content += row
+                    content += '\n'
+                Page.objects.create(content = content , book = b  , page_number = page_number)
+                i+=901
                 page_number+=1
         return redirect (self.success_url)
 
@@ -94,10 +102,59 @@ class DetailPage (LoginRequiredMixin , View):
                 Read.objects.create(page = previous_page , user = request.user.profile)
             return redirect(reverse('detail_page',kwargs={'book_pk' : book_pk , 'page_num' : page_num-1}))
             
+class ProfileView(View):
+    def get(self , request):
+        
+        return render(request , 'book/profile.html')
 
+class OwnerUpdateBook(LoginRequiredMixin , View) :
+    model = Book
+    success_url = '/'
+    template = 'book/book_form.html'
 
+    def get(self, request, pk):
+        book = get_object_or_404(self.model, pk=pk)
+        if request.user.profile != book.owner :
+            raise Http404()
+        form = BookForm(instance=book)
+        ctx = {'form': form}
+        return render(request, self.template, ctx)
+
+    def post(self, request, pk):
+        book = get_object_or_404(self.model, pk=pk)
+        form = BookForm(request.POST, instance=book)
+        if not form.is_valid():
+            ctx = {'form': form}
+            return render(request, self.template, ctx)
+        if request.user.profile != book.owner :
+            raise Http404()
+        form.save()
+        return redirect(self.success_url)
+
+class OwnerDeleteBook(LoginRequiredMixin , DeleteView):
+    model = Book
+    template_name = 'book/delete_form.html'
+    success_url = '/'
+    def get_queryset(self,*args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(owner= self.request.user.profile)
+    
+def search(request):
+    if request.method == 'GET' and 'search' in request.GET :
+        list_books=Book.objects.filter(title__icontains= request.GET['search'])
+        return render(request , 'book/filter.html' , {'list_books' : list_books})
+class MyBooksView(LoginRequiredMixin , View):
+    def get(self , request):
+        books = Book.objects.filter(owner = request.user.profile)
+        return render(request,'book/my_books.html',{'my_books':books})
+
+class CreateCategory(LoginRequiredMixin , CreateView):
+    model= Category
+    fields= '__all__'
+    success_url=reverse_lazy('create_book')
+    
 from django.contrib.auth import login
 from django.contrib import messages
+
 
 def register_request(request):
     if(request.method == "POST") :

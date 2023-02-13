@@ -12,11 +12,18 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+class Category(models.Model):
+    category_name = models.CharField(max_length=50 , validators=[validators.MinLengthValidator(2,"Category name have to be more than one charecter.")])
+    def __str__(self) :
+        return self.category_name 
+
 class Book(models.Model):
     title = models.CharField(max_length=50 ,
      validators=[validators.MinLengthValidator(2,'you must input more than 1 char')])
     
     owner = models.ForeignKey('Profile', on_delete=models.CASCADE)
+    categories = models.ManyToManyField("Category", related_name='categories')
+    preview = models.CharField(max_length=500,default='No preview')
 
     def __str__(self):
         return str(self.title)

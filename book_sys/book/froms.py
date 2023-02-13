@@ -8,11 +8,16 @@ from .models import *
 class BookForm(ModelForm):
     class Meta :
         model = Book
-        fields =['title']
+        fields =['title' , 'preview' , 'categories']
+        widgets = {
+            'categories': forms.CheckboxSelectMultiple(),
+            'preview' : forms.TextInput(attrs={'class':'form-control'}),
+            'title' : forms.TextInput(attrs={'class':'form-control'})
+        }
 
 
 class UploadFile(forms.Form):
-    upfile = forms.FileField()
+    upfile = forms.FileField(widget=forms.FileInput(attrs={'class':'form-control'}))
 
 class UserCreateForm(UserCreationForm):
     username = forms.CharField(required=True)

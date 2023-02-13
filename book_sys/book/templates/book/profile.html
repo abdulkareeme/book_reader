@@ -1,0 +1,14 @@
+
+{% extends 'book/base_template.html' %}
+
+{% block content %}
+
+
+Hello {{ user.username }}
+{%if user.email %}
+Email : user.email
+{%endif%}
+{% if user.profile.account_type == 2 %}
+    <p>See <a href="{%url 'my_books'%}">Your List book</a></p>
+{% endif %}
+{%endblock%}
