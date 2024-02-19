@@ -45,9 +45,13 @@ To run the Book Reader locally, follow these steps:
    ![example1](https://github.com/abdulkareeme/book_reader/blob/main/images/Screenshot%202024-02-20%20at%2001-20-39%20Book%20Reader.png)
 2. Show the preview of the books before open it
    ![example2](https://github.com/abdulkareeme/book_reader/blob/main/images/Screenshot%202024-02-20%20at%2001-21-48%20Book%20Reader.png)
-3. Show the pages
+3. Creating a book
+   ![example5](https://github.com/abdulkareeme/book_reader/blob/main/images/Screenshot%202024-02-20%20at%2002-00-27%20Book%20Reader.png)
+4. Creating a category
+   ![example6](https://github.com/abdulkareeme/book_reader/blob/main/images/Screenshot%202024-02-20%20at%2002-00-35%20Book%20Reader.png)
+5. Show the pages
    ![example3](https://github.com/abdulkareeme/book_reader/blob/main/images/Screenshot%202024-02-20%20at%2001-41-01%20Book%20Reader.png)
-4. Ownd books
+6. Ownd books
    ![example4](https://github.com/abdulkareeme/book_reader/blob/main/images/Screenshot%202024-02-20%20at%2001-41-34%20Book%20Reader.png)
 
 
