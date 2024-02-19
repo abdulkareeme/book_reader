@@ -10,53 +10,52 @@ from django.views.generic import ListView , DetailView , UpdateView, DeleteView
 from django.db.models import Max
 # Create your views here.
 
-class CreateBook(LoginRequiredMixin , View):
-    template= 'book/book_form.html'
-    success_url = '/'
-    def get(self , request):
-        if request.user.profile.account_type == 1 :
-             raise Http404()
-        form = BookForm()
-        upfile= UploadFile()
+class CreateBook(LoginRequiredMixin, View):
+    template_name = 'book/book_form.html'
+    success_url = '/'  # Change this to the appropriate URL
 
-        ctx = {'form' : form  , 'upfile' : upfile}
-        return render(request , self.template , ctx)
-    
-    def post (self , request):
+    def get(self, request):
+        if request.user.profile.account_type == 1:
+            raise Http404()
+        form = BookForm()
+        upfile = UploadFile()
+        ctx = {'form': form, 'upfile': upfile}
+        return render(request, self.template_name, ctx)
+
+    def post(self, request):
         form = BookForm(request.POST)
-        upfile= UploadFile(request.POST , request.FILES)
+        upfile = UploadFile(request.POST, request.FILES)
         if not form.is_valid() or not upfile.is_valid():
-            ctx = {'form' : form , 'upfile' : upfile}
-            return render(request , self.template , ctx)
-        b=form.save(commit=False)
-        b.owner=request.user.profile
+            ctx = {'form': form, 'upfile': upfile}
+            return render(request, self.template_name, ctx)
+
+        # Save the book instance
+        b = form.save(commit=False)
+        b.owner = request.user.profile
         b.save()
-        add_categories= BookForm(request.POST , instance=b)
+
+        # Save additional categories (if applicable)
+        add_categories = BookForm(request.POST, instance=b)
         add_categories.save()
 
-        f= request.FILES["upfile"]
-        page_number =1
-        l=0
+        # Process the uploaded file and create pages
+        f = request.FILES["upfile"]
+        page_number = 1
         for chunk in f.chunks():
-            i=0 
-            chunk = str(chunk)
-            
-            while i<len(chunk):
-                j=i+900
-                j=min(j,len(chunk))
-                k=15
-                while(j!=len(chunk) and chunk[j]!=' ' and k>0):
-                    k-=1
-                    j-=1
-                page_content = chunk[i:j].split('\n')
-                content = str()
-                for row in page_content :
-                    content += row
-                    content += '\n'
-                Page.objects.create(content = content , book = b  , page_number = page_number)
-                i+=901
-                page_number+=1
-        return redirect (self.success_url)
+            chunk_str = chunk.decode("utf-8")  # Decode the binary chunk to a string
+            i = 0
+            while i < len(chunk_str):
+                j = i + 900
+                j = min(j, len(chunk_str))
+                # Adjust logic to split content based on spaces or other criteria
+                # For now, I'll split by newline characters
+                page_content = chunk_str[i:j].split('\n')
+                content = '\n'.join(page_content)  # Rejoin the lines
+                Page.objects.create(content=content, book=b, page_number=page_number)
+                i += 901
+                page_number += 1
+
+        return redirect(self.success_url)
 
 class Main(ListView):
     model = Book
